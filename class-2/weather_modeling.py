@@ -25,21 +25,30 @@ def process_hardcoded_values():
 
 #values from keyboard input
 def process_keyboard_input():
+    print("\nProcessing values from keyboard input:")
     try:
-        t = float(input("Enter the temperature (t): "))
-        h = float(input("Enter the humidity (h): "))
-        w = float(input("Enter the wind speed (w): "))
+        # Validate temperature
+        t = float(input("Enter the temperature (t) in degrees Celsius: "))
         if t < -50 or t > 60:
-            raise ValueError("Temperature must be between -50 and 60 degrees.")
+            raise ValueError("Temperature must be between -50°C and 60°C.")
+        
+        # Validate humidity
+        h = float(input("Enter the humidity (h) as a percentage: "))
         if h < 0 or h > 100:
-            raise ValueError("Humidity must be between 0 and 100%.")
+            raise ValueError("Humidity must be between 0% and 100%.")
+        
+        # Validate wind speed
+        w = float(input("Enter the wind speed (w) in km/h: "))
         if w < 0:
             raise ValueError("Wind speed must be non-negative.")
+
+        # Perform calculation and prediction
         weather = calculate_weather(t, h, w)
         weather_type = predict_weather(weather)
         print(f"With input values (t={t}, h={h}, w={w}), Weather = {weather:.2f}, Prediction: {weather_type}")
     except ValueError as e:
-        print(f"Error: {e}")
+        print(f"Input Error: {e}")
+
 
 #inputs from a file
 def process_single_input_from_file(file_name):
@@ -62,16 +71,46 @@ def process_multiple_inputs_from_file(file_name):
     try:
         with open(file_name, "r") as file:
             lines = file.readlines()
+        
         for i, line in enumerate(lines):
             try:
                 t, h, w = map(float, line.strip().split())
+                
+                # Validate values
+                if not (-50 <= t <= 60):
+                    raise ValueError(f"Set {i + 1}: Temperature {t} is out of range (-50 to 60).")
+                if not (0 <= h <= 100):
+                    raise ValueError(f"Set {i + 1}: Humidity {h} is out of range (0 to 100).")
+                if w < 0:
+                    raise ValueError(f"Set {i + 1}: Wind speed {w} cannot be negative.")
+                
+                # Process valid input
                 weather = calculate_weather(t, h, w)
                 weather_type = predict_weather(weather)
-                print(f"With input values (t={t}, h={h}, w={w}), Weather = {weather:.2f}, Prediction: {weather_type}")
-            except ValueError:
-                print(f"Set {i + 1}: Invalid input format. Skipping this set.")
+                print(f"Set {i + 1}: With input values (t={t}, h={h}, w={w}), Weather = {weather:.2f}, Prediction: {weather_type}")
+            except ValueError as e:
+                print(e)
     except FileNotFoundError:
         print("Error: File not found. Please ensure the file exists.")
+    except ValueError:
+        print("Error: Invalid input format in the file.")
+
+def validate_temperature(t):
+    if t < -50 or t > 60:
+        raise ValueError("Temperature must be between -50°C and 60°C.")
+    return t
+
+def validate_humidity(h):
+    if h < 0 or h > 100:
+        raise ValueError("Humidity must be between 0% and 100%.")
+    return h
+
+def validate_wind_speed(w):
+    if w < 0:
+        raise ValueError("Wind speed must be non-negative.")
+    return w
+
+
 
 def main():
     print("Weather Modeling using the formula: w = 0.5t^2 - 0.2h + 0.1w - 15")
