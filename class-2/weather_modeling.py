@@ -25,13 +25,22 @@ def process_hardcoded_values():
 
 #values from keyboard input
 def process_keyboard_input():
-    print("\nProcessing values from keyboard input:")
-    t = float(input("Enter the temperature (t): "))
-    h = float(input("Enter the humidity (h): "))
-    w = float(input("Enter the wind speed (w): "))
-    weather = calculate_weather(t, h, w)
-    weather_type = predict_weather(weather)
-    print(f"With input values (t={t}, h={h}, w={w}), Weather = {weather:.2f}, Prediction: {weather_type}")
+    try:
+        t = float(input("Enter the temperature (t): "))
+        h = float(input("Enter the humidity (h): "))
+        w = float(input("Enter the wind speed (w): "))
+        if t < -50 or t > 60:
+            raise ValueError("Temperature must be between -50 and 60 degrees.")
+        if h < 0 or h > 100:
+            raise ValueError("Humidity must be between 0 and 100%.")
+        if w < 0:
+            raise ValueError("Wind speed must be non-negative.")
+        weather = calculate_weather(t, h, w)
+        weather_type = predict_weather(weather)
+        print(f"With input values (t={t}, h={h}, w={w}), Weather = {weather:.2f}, Prediction: {weather_type}")
+    except ValueError as e:
+        print(f"Error: {e}")
+
 #inputs from a file
 def process_single_input_from_file(file_name):
     print("\nProcessing a single set of inputs from file:")
